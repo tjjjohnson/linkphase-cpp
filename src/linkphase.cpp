@@ -86,24 +86,31 @@ struct MarkerInfoHalfSibPhasing
     
 };
 
-struct AnimalInfo 
+class AnimalInfo 
 {
-    int id;
-    bool haplotyped;
-    bool genotyped;
-    vector<Genotype> hap1;
-    vector<Genotype> hap2;
-    vector<Genotype> gen1;
-    vector<Genotype> gen2;
-    vector<int> prephaseInfo;
-    unsigned char *ga1;
-    //vector<unsigned char[2]> hap;
-    //vector<unsigned char[2]> genotypes;
-    int sire; 
-    int dam;
+    public:
+        int id;
+        bool haplotyped;
+        bool genotyped;
+        vector<Genotype> hap1;
+        vector<Genotype> hap2;
+        vector<Genotype> gen1;
+        vector<Genotype> gen2;
+        
+        vector<int> prephaseInfo;
+        unsigned char *ga1;
+        //vector<unsigned char[2]> hap;
+        //vector<unsigned char[2]> genotypes;
+        int sire; 
+        int dam;
 
-    //allocate(hap(nani,2,nmarq),typ(nani,2*nmarq),genotyped(nani))
-    //allocate(sire(nani),dam(nani),haplotyped(nani),hapin(nmarq),
+        bool hasGenotypedSire() {
+            // need a way to lookup sire AnimalInfo
+            //if(sire != 0 && )
+        }
+
+        //allocate(hap(nani,2,nmarq),typ(nani,2*nmarq),genotyped(nani))
+        //allocate(sire(nani),dam(nani),haplotyped(nani),hapin(nmarq),
 };
 
 
@@ -257,7 +264,7 @@ void phaseMendelian(vector<AnimalInfo> &animalInfoVec)
         if(animalInfo->sire == 0 && animalInfo->dam == 0) 
             continue;
         
-        
+
     }
 }
 
