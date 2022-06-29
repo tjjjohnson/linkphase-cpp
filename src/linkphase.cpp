@@ -96,7 +96,7 @@ class AnimalInfo
         vector<Genotype> hap2;
         vector<Genotype> gen1;
         vector<Genotype> gen2;
-        
+
         vector<int> prephaseInfo;
         unsigned char *ga1;
         //vector<unsigned char[2]> hap;
@@ -286,10 +286,12 @@ vector<AnimalInfo> readGenotypes(Parameters parameters, vector<MarkerInfo> &mark
             headerStream >> indvId;
             AnimalInfo animalInfo;
             animalInfo.id = indvId;
-            animalInfo.gen1 = std::vector<Genotype>(markerInfo.size());
-            animalInfo.gen2 = std::vector<Genotype>(markerInfo.size());
-            animalInfo.hap1 = std::vector<Genotype>(markerInfo.size());
-            animalInfo.hap2 = std::vector<Genotype>(markerInfo.size());
+            //animalInfo.gen1 = std::vector<Genotype>(markerInfo.size());
+            //animalInfo.gen2 = std::vector<Genotype>(markerInfo.size());
+            //animalInfo.gen1.reserve(9);
+            //animalInfo.gen2.reserve(9);
+            //animalInfo.hap1 = std::vector<Genotype>(markerInfo.size());
+            //animalInfo.hap2 = std::vector<Genotype>(markerInfo.size());
             animalInfo.prephaseInfo = std::vector<int>(markerInfo.size());
             animalInfoVec.push_back(animalInfo);
         }
@@ -327,8 +329,10 @@ vector<AnimalInfo> readGenotypes(Parameters parameters, vector<MarkerInfo> &mark
                     animalInfoVec[animalIndex].genotyped = true;
                 }
 
-                animalInfoVec[animalIndex].gen1[markerIndex] = gen1;
-                animalInfoVec[animalIndex].gen2[markerIndex] = gen2;
+                animalInfoVec[animalIndex].gen1.push_back(gen1);
+                animalInfoVec[animalIndex].gen2.push_back(gen2);
+                animalInfoVec[animalIndex].hap1.push_back(Genotype::missing);
+                animalInfoVec[animalIndex].hap2.push_back(Genotype::missing);
 
                 animalIndex++;
             }
