@@ -1,6 +1,6 @@
 #include <map>
 #include <iostream>
-#include <vector> 
+#include <vector>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -9,65 +9,33 @@
 #include <string>
 #include <algorithm>
 #include "pedigree.cpp"
+#include "AnimalInfo.cpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 //namespace po = boost::program_options;
-using namespace std; 
+using namespace std;
 using namespace boost::program_options;
 
-enum Genotype { missing, ref, alt};
-enum Prephase { 
-    none = 0, 
-    hom = 1,
-    sire_hom = 2, 
-    dam_hom = 3, 
-    both_informative = 4
-};
 
 
-
-vector<string> split (const string &s, char delim) {
-    vector<string> result;
-    stringstream ss (s);
-    string item;
-    while (getline (ss, item, delim)) {
-        result.push_back (item);
-    }
-
-    return result;
-}
-
-vector<char> split_char (const string &s, char delim) {
-    vector<char> result;
-    stringstream ss (s);
-    string item;
-    while (getline (ss, item, delim)) {
-        char c = item.at(0);
-        result.push_back (item.at(0));
-    }
-
-    return result;
-}
 
 struct MarkerInfo {
     double posi1;
     double posi2;
 
     int info_offspring;
-    
+
     // real*8, allocatable ::emap(:,:),probrecs(:,:),numrecs(:,:)
     //allocate(emap(nmarq,2),probrecs(nmarq,2),numrecs(nmarq,2))
     int emap[2];
     int probrecs[2];
     int numrecs[2];
 
-    
 
 };
 
 
-struct MarkerInfoHalfSibPhasing 
-{
+struct MarkerInfoHalfSibPhasing {
     // allocate(phase1(nmarq),phase2(nmarq),info_marker(nmarq,3),par_error(nmarq),entropy(nmarq),nentropy(nmarq))
     // allocate(phased(nmarq),npar(nmarq),noff(nmarq),off_error(nmarq),tophase(nmarq))
     // allocate(emap(nmarq,2),probrecs(nmarq,2),numrecs(nmarq,2))
@@ -82,40 +50,12 @@ struct MarkerInfoHalfSibPhasing
     double off_error;
     double entropy;
     double nentropy;
-    
-    
-};
 
-class AnimalInfo 
-{
-    public:
-        int id;
-        bool haplotyped;
-        bool genotyped;
-        vector<Genotype> hap1;
-        vector<Genotype> hap2;
-        vector<Genotype> gen1;
-        vector<Genotype> gen2;
 
-        vector<int> prephaseInfo;
-        unsigned char *ga1;
-        //vector<unsigned char[2]> hap;
-        //vector<unsigned char[2]> genotypes;
-        int sire; 
-        int dam;
-
-        bool hasGenotypedSire() {
-            // need a way to lookup sire AnimalInfo
-            //if(sire != 0 && )
-        }
-
-        //allocate(hap(nani,2,nmarq),typ(nani,2*nmarq),genotyped(nani))
-        //allocate(sire(nani),dam(nani),haplotyped(nani),hapin(nmarq),
 };
 
 
-struct MarkerInfoHMM
-{
+struct MarkerInfoHMM {
     // real*8, allocatable ::alpha(:,:),scaling(:),bjk(:,:,:),beta(:,:),gamma(:,:),L11(:),L21(:),L12(:),L22(:)
     //allocate(alpha(2,nmarq),beta(2,nmarq),gamma(2,nmarq),bjk(nmarq,2,2),scaling(nmarq))
     double alpha[2];
@@ -130,23 +70,20 @@ struct MarkerInfoHMM
 };
 
 
-void outputHMM()
-{
+void outputHMM() {
 
 
     // output prob_origins.txt, recominations and number of recombinations / offspring from HMM
     // loop over offspring
-        // loop over markers
+    // loop over markers
 }
 
-void printRec() 
-{
+void printRec() {
 
 }
 
 //subroutine write_data
-void writeDataFiles(int reading, vector<AnimalInfo> &animalInfoVec, int nMarkers)
-{ 
+void writeDataFiles(int reading, vector <AnimalInfo> &animalInfoVec, int nMarkers) {
     // implicit none
     // character*50 ::hfile
 
@@ -154,10 +91,9 @@ void writeDataFiles(int reading, vector<AnimalInfo> &animalInfoVec, int nMarkers
     ofstream phasesFile("phases");
 
     // if(reading==0)then
-    if(reading == 0) {
+    if (reading == 0) {
         //do i=1,nani
-        for(int i=1; i<animalInfoVec.size(); i++)
-        {
+        for (int i = 1; i < animalInfoVec.size(); i++) {
             //   if(.not.genotyped(i) .and. .not.haplotyped(i))cycle
             //   do j=1,2
             // !  write(101,'(i6,i2,1x,<nmarq>i2)')oldid(i),j,(hap(i,j,k),k=1,nmarq)
@@ -170,7 +106,7 @@ void writeDataFiles(int reading, vector<AnimalInfo> &animalInfoVec, int nMarkers
             //  enddo
         }
         //  close(101)
-    } else if(reading==1) {
+    } else if (reading == 1) {
         //  do i=1,nani
         //   if(.not.genotyped(i) .and. .not.haplotyped(i))cycle
         //   write(101,'(i7,1x,i7)',advance='no')oldid(i),oldid(i)
@@ -205,8 +141,7 @@ void writeDataFiles(int reading, vector<AnimalInfo> &animalInfoVec, int nMarkers
     phasesFile.close();
 }
 
-struct Parameters
-{
+struct Parameters {
     string pedFile;
     string genotypeFile;
     string markerFile;
@@ -216,7 +151,7 @@ struct Parameters
     // if(paramline=='yes' .and. phase_option==2)phase_option=3
     // if(paramline=='yes' .and. phase_option==1)stop 'Error in parameter file, HMM_PHASING must be preceded by HALFSIB_PHASING'
     bool sexChrom; //autosome=0
-    bool sexMap;   
+    bool sexMap;
     bool columns;
     int nTemplates;
     int nIterations;
@@ -224,17 +159,16 @@ struct Parameters
 
 };
 
-void phaseHomozygotes(vector<AnimalInfo> &animalInfoVec)
-{
+void phaseHomozygotes(vector <AnimalInfo> &animalInfoVec) {
     //for(int animalIndex=0; animalIndex < animalInfoVec.size(); animalIndex++) {
-    for(auto iter = animalInfoVec.begin(); iter != animalInfoVec.end(); ++iter) {
+    for (auto iter = animalInfoVec.begin(); iter != animalInfoVec.end(); ++iter) {
         AnimalInfo *animalInfo = &(*iter);
-        for(int markerIndex=0; markerIndex<animalInfo->gen1.size(); markerIndex++) {
-            
-            if(animalInfo->gen1[markerIndex] != Genotype::missing) {
-                if(animalInfo->gen1[markerIndex] == animalInfo->gen2[markerIndex]) {
+        for (int markerIndex = 0; markerIndex < animalInfo->gen1.size(); markerIndex++) {
+
+            if (animalInfo->gen1[markerIndex] != Genotype::missing) {
+                if (animalInfo->gen1[markerIndex] == animalInfo->gen2[markerIndex]) {
                     animalInfo->hap1[markerIndex] = animalInfo->gen1[markerIndex];
-                    animalInfo->hap2[markerIndex] = animalInfo->gen1[markerIndex];    
+                    animalInfo->hap2[markerIndex] = animalInfo->gen1[markerIndex];
                     animalInfo->prephaseInfo[markerIndex] = Prephase::hom;
                     animalInfo->haplotyped = true;
                     //if((k < parstart .or. k > parend) .and. sexes(i)==1)hap(i,1,k)=9
@@ -250,82 +184,99 @@ void phaseHomozygotes(vector<AnimalInfo> &animalInfoVec)
             }
         }
     }
-    
+
 }
 
-void phaseMendelian(vector<AnimalInfo> &animalInfoVec)
-{
-    for(auto iter = animalInfoVec.begin(); iter != animalInfoVec.end(); ++iter) {
+
+void phaseMendelian(vector <AnimalInfo> &animalInfoVec) {
+
+    for (auto iter = animalInfoVec.begin(); iter != animalInfoVec.end(); ++iter) {
         AnimalInfo *animalInfo = &(*iter);
 
-        if(animalInfo->genotyped)
-            continue;
-
-        if(animalInfo->sire == 0 && animalInfo->dam == 0) 
-            continue;
-        
-
+        animalInfo->phaseMendelian();
     }
 }
 
-vector<AnimalInfo> readGenotypes(Parameters parameters, vector<MarkerInfo> &markerInfo)
-{
+vector <AnimalInfo>
+readGenotypes(Parameters parameters, vector <MarkerInfo> &markerInfo, std::map<int, PEDIGREE> &pedMap) {
+    map < int, AnimalInfo * > animalInfoMap;
+    vector <AnimalInfo> animalInfoVec;
 
-    vector<AnimalInfo> animalInfoVec; 
     std::ifstream genotypeFile(parameters.genotypeFile);
     //char isPar = 'A';
-    if(parameters.columns) {
+    if (parameters.columns) {
         // read genotyped individual ids and 
         string headerLine;
         getline(genotypeFile, headerLine);
         std::istringstream headerStream(headerLine);
-        
-        while (!headerStream.eof())
-        { 
+
+        // should reserve vector at correct size     
+        animalInfoVec.reserve(500000);
+        while (!headerStream.eof()) {
             int indvId;
             headerStream >> indvId;
             AnimalInfo animalInfo;
             animalInfo.id = indvId;
-            //animalInfo.gen1 = std::vector<Genotype>(markerInfo.size());
-            //animalInfo.gen2 = std::vector<Genotype>(markerInfo.size());
-            //animalInfo.gen1.reserve(9);
-            //animalInfo.gen2.reserve(9);
-            //animalInfo.hap1 = std::vector<Genotype>(markerInfo.size());
-            //animalInfo.hap2 = std::vector<Genotype>(markerInfo.size());
-            animalInfo.prephaseInfo = std::vector<int>(markerInfo.size());
+
             animalInfoVec.push_back(animalInfo);
+            animalInfoMap[indvId] = &animalInfoVec[animalInfoVec.size() - 1];
+            if (animalInfoVec.size() > 1) {
+                //cerr << "animalInfoVec.size() = " << animalInfoVec.size() << endl;
+                //cerr << "\t" << animalInfoVec[animalInfoVec.size() - 1].sire->id << endl;
+            }
+        }
+
+        // now we have read animal info - set pedigree
+        for (auto iter = animalInfoVec.begin(); iter != animalInfoVec.end(); ++iter) {
+            AnimalInfo *animalInfo = &(*iter);
+            if (animalInfoMap.count(pedMap[animalInfo->id].sire_key)) {
+                animalInfo->sire = animalInfoMap[pedMap[animalInfo->id].sire_key];
+            }
+            if (animalInfoMap.count(pedMap[animalInfo->id].dam_key)) {
+                animalInfo->dam = animalInfoMap[pedMap[animalInfo->id].dam_key];
+            }
         }
 
         //unsigned char gens1[animalInfoVec.size()][9];
         //unsigned char gens2[animalInfoVec.size()][9];
         // make sure ids are in pedigree file
         int markerIndex = 0;
-        while( !genotypeFile.eof() ) {
+        while (!genotypeFile.eof()) {
             string genotypeLine;
             getline(genotypeFile, genotypeLine);
             std::istringstream genotypeStream(genotypeLine);
             int animalIndex = 0;
-            while(!genotypeStream.eof()) {
+            while (!genotypeStream.eof()) {
                 int genotype;
                 Genotype gen1, gen2;
                 genotypeStream >> genotype;
-                
-                switch(genotype) {
+
+                switch (genotype) {
                     case -1:
-                        gen1 = Genotype::missing; gen2 = Genotype::missing; break;
+                        gen1 = Genotype::missing;
+                        gen2 = Genotype::missing;
+                        break;
                     case 9:
-                        gen1 = Genotype::missing; gen2 = Genotype::missing; break;
+                        gen1 = Genotype::missing;
+                        gen2 = Genotype::missing;
+                        break;
                     case 0:
-                        gen1 = Genotype::ref; gen2 = Genotype::ref; break;
+                        gen1 = Genotype::ref;
+                        gen2 = Genotype::ref;
+                        break;
                     case 1:
-                        gen1 = Genotype::ref; gen2 = Genotype::alt; break;
+                        gen1 = Genotype::ref;
+                        gen2 = Genotype::alt;
+                        break;
                     case 2:
-                        gen1 = Genotype::alt; gen2 = Genotype::alt; break;
+                        gen1 = Genotype::alt;
+                        gen2 = Genotype::alt;
+                        break;
                     default:
                         cerr << "Invalid Genotype " << genotype << endl;
                         break;
                 }
-                if(genotype != -1 && genotype != 9) {
+                if (genotype != -1 && genotype != 9) {
                     animalInfoVec[animalIndex].genotyped = true;
                 }
 
@@ -333,78 +284,87 @@ vector<AnimalInfo> readGenotypes(Parameters parameters, vector<MarkerInfo> &mark
                 animalInfoVec[animalIndex].gen2.push_back(gen2);
                 animalInfoVec[animalIndex].hap1.push_back(Genotype::missing);
                 animalInfoVec[animalIndex].hap2.push_back(Genotype::missing);
+                animalInfoVec[animalIndex].prephaseInfo.push_back(Prephase::none);
 
                 animalIndex++;
             }
-            
+
             markerIndex++;
         }
         //cerr << "genotype[1][2] = " << (int) gens1[1][2] << " " << (int) gens2[1][2] << endl;
 
     } else {
-        cerr << "Reading genotypes with animals in rows is not implemented" << endl; exit(0);
+        cerr << "Reading genotypes with animals in rows is not implemented" << endl;
+        exit(0);
     }
-    cerr << "animalInfoVec.gens[1][2] = " << (int) animalInfoVec[1].gen1[2] << " " << (int) animalInfoVec[1].gen2[2] << endl;
+    cerr << "animalInfoVec.gens[1][2] = " << (int) animalInfoVec[1].gen1[2] << " " << (int) animalInfoVec[1].gen2[2]
+         << endl;
+    cerr << "animalInfoMap[11] " << animalInfoMap[11]->toString() << endl;
+    cerr << "animalInfoMap[137] " << animalInfoMap[137]->toString() << endl;
+    cerr << "animalInfoMap[470] " << animalInfoMap[470]->toString() << endl;
+    cerr << "animalInfoMap[595] " << animalInfoMap[595]->toString() << endl;
+
+
     return animalInfoVec;
 }
 
 
-int main (int argc, const char * argv[]) {
+int main(int argc, const char *argv[]) {
     // integer ::parent1,parent2,nmarq,nhap,i,j,k,l,pos(2),round,ori,num,useold,verif,maxinfo,maxk
-    int nmarq,nhap,i,j,k,l,round,ori,num,useold,verif,maxinfo,maxk;
+    int nmarq, nhap, i, j, k, l, round, ori, num, useold, verif, maxinfo, maxk;
     // integer ::all1,all2,sall1,sall2,dall1,dall2,pall1,pall2,io,maxid,n1,n2,ntemplates,autosome,parstart,parend,sex
-    int all1,all2,sall1,sall2,dall1,dall2,io,maxid,n1,n2,ntemplates,autosome,parstart,parend,sex;
+    int all1, all2, sall1, sall2, dall1, dall2, io, maxid, n1, n2, ntemplates, autosome, parstart, parend, sex;
     // integer*1, allocatable ::hap(:,:,:),typ(:,:),hapin(:),prephaseinfo(:,:)
-    vector<vector<vector<signed char>>> haplotypes;
-    vector<vector<signed char>> genotypes;
+    vector < vector < vector < signed char>>> haplotypes;
+    vector <vector<signed char>> genotypes;
     vector<signed char> hapin;
     // real*8 ::val,pmax,lik,lik2,bestlik,conv
-    double val,lik,conv;
+    double val, lik, conv;
     // integer ::nround,ani,nani,k1,k2,print_val,freqprint,pere,mere,add1,add2,parent,round2,nround2,nseed,nroundextra,seed,map_option
-    int ani,nani,pere,mere,map_option;
+    int ani, nani, pere, mere, map_option;
     // integer, allocatable ::sire(:),dam(:),sexes(:),newid(:),oldid(:),byparent(:,:)
     vector<int> sire, dam, sexes, newid, oldid;
-    vector<vector<int>> byparent;
+    vector <vector<int>> byparent;
     // real*8 ::position,position2,ph1,ph2,epsi,gerr
-    double position,position2,ph1,ph2,epsi,gerr;
+    double position, position2, ph1, ph2, epsi, gerr;
     // real*8,allocatable ::posi(:,:)
     // logical*1, allocatable ::genotyped(:),haplotyped(:)
     vector<bool> genotyped, haplotyped;
     // character*80 ::genofile,pedfile,oldfile,markfile,step
-    string genofile,pedfile,oldfile,markfile,step;
+    string genofile, pedfile, oldfile, markfile, step;
     // integer ::ori0,ori1,ori2,mk1,mk2,n_switched,n_erased,n_phased
-    int ori1,n_phased;
+    int ori1, n_phased;
 
 
     // real*8 ::pjump(0:1),pi,prob_emission
-    double pjump[2],pi,prob_emission;
-    
+    double pjump[2], pi, prob_emission;
+
     // real*8 ::edenom1,edenom2,econv1,econv2,totlik1,totlik2
-    double edenom1,edenom2,econv1,econv2,totlik1,totlik2;
+    double edenom1, edenom2, econv1, econv2, totlik1, totlik2;
     // integer ::noffspring,firsto,lasto,oldparent,mc1,parsex,offspring,p12,p11,neighbour,r12,r11,firstm,lastm,c1,c2,sextemplate
-    int noffspring,firsto,lasto,oldparent,mc1,parsex,offspring,sextemplate;
+    int noffspring, firsto, lasto, oldparent, mc1, parsex, offspring, sextemplate;
     // integer ::ninfo,nprogeny(4),maxoffspring,numoff,inphase,outphase,m1,m2,nheter,nhomoz,checkrec,switch,reading
-    int ninfo,maxoffspring,numoff,inphase,outphase,m1,m2,nheter,nhomoz,reading;
+    int ninfo, maxoffspring, numoff, inphase, outphase, m1, m2, nheter, nhomoz, reading;
     // integer ::expanded,limit1,ninfol,ninfor,inphasel,inphaser,outphasel,outphaser,lastknown,lastori,famsize,nclust,nclust2,clust
-    int limit1,lastknown,lastori,famsize,clust;
+    int limit1, lastknown, lastori, famsize, clust;
     // integer ::lasttophase,stopt,ntested,refoff,phase_option,mate,nprinted,gender,norigins1,norigins2,nemission
-    int lasttophase,ntested,refoff,phase_option,mate,nprinted,gender,norigins1,norigins2,nemission;
+    int lasttophase, ntested, refoff, phase_option, mate, nprinted, gender, norigins1, norigins2, nemission;
     // real*8    ::rrate,endpos,startpos,dist,rratel,rrater,ngam(0:2),nh1,nh2,entro1,entro2,nall11,nall12,nall21,nall22
-    double ngam[3],nh1,nh2,entro1,entro2,nall11,nall12,nall21,nall22;
+    double ngam[3], nh1, nh2, entro1, entro2, nall11, nall12, nall21, nall22;
     // real*8, allocatable ::gammas(:,:),expco(:)
     vector<double> expco;
-    vector<vector<double>> gammas;
+    vector <vector<double>> gammas;
     // real*8 ::b11,b12,b21,b22,PTOT,p_error,p_correct
-    double b11,b12,b21,b22,PTOT,p_error,p_correct;
+    double b11, b12, b21, b22, PTOT, p_error, p_correct;
 
-    
+
     //moved to MarkerInfo struct
     // real*8, allocatable ::par_error(:),npar(:),noff(:),off_error(:),entropy(:),nentropy(:)
     // integer, allocatable ::phase1(:),phase2(:),info_offspring(:),
-    vector<MarkerInfo> markerInfoVec;
-    
+    vector <MarkerInfo> markerInfoVec;
+
     // integer, allocatable ::hap2(:,:)
-    vector<vector<int>> hap2; // allocate(hap2(noffspring,nmarq))
+    vector <vector<int>> hap2; // allocate(hap2(noffspring,nmarq))
 
     //not used
     //,haplotypes(:,:)
@@ -414,7 +374,7 @@ int main (int argc, const char * argv[]) {
     //logical ::prephased
     bool prephased;
     //integer ::mapiter,niter_map,sexmap,ncol
-    int mapiter,niter_map,sexmap,ncol;
+    int mapiter, niter_map, sexmap, ncol;
 
     namespace po = boost::program_options;
     Parameters parameters;
@@ -423,19 +383,19 @@ int main (int argc, const char * argv[]) {
     options_description desc("Allowed Options");
     bool abool = false;
     desc.add_options()
-      ("pedigree-file,p", po::value(&parameters.pedFile)->required(), "Pedigree File")
-      ("genotype-file,g", po::value<std::string>(&parameters.genotypeFile)->required(), "Genotype file vcf or link phase format")
-      ("marker-file,m", po::value<std::string>(&parameters.markerFile), "Marker file not required with VCF")
-      ("templates", po::value<int>(&parameters.nTemplates)->required(), "")  
-      ("iterations", po::value<int>(&parameters.nIterations)->default_value(0), "") 
-      ("geno-error", po::value<double>(&parameters.gerr)->default_value(1.0e-3), "Genotyping error probability")
-      ("halfsib-phasing", bool_switch(&parameters.halfsibPhasing)->default_value(false), "")
-      ("hmm-phasing", bool_switch(&parameters.hmmPhasing)->default_value(false), "")
-      ("check-prephasing", bool_switch(&parameters.checkPrephasing)->default_value(false), "")
-      ("sex-chrom", bool_switch(&parameters.sexChrom)->default_value(false), "")  
-      ("sex-map", bool_switch(&parameters.sexMap)->default_value(false), "")  
-      ("columns", bool_switch(&parameters.columns)->default_value(false), "") 
-    ;
+            ("pedigree-file,p", po::value(&parameters.pedFile)->required(), "Pedigree File")
+            ("genotype-file,g", po::value<std::string>(&parameters.genotypeFile)->required(),
+             "Genotype file vcf or link phase format")
+            ("marker-file,m", po::value<std::string>(&parameters.markerFile), "Marker file not required with VCF")
+            ("templates", po::value<int>(&parameters.nTemplates)->required(), "")
+            ("iterations", po::value<int>(&parameters.nIterations)->default_value(0), "")
+            ("geno-error", po::value<double>(&parameters.gerr)->default_value(1.0e-3), "Genotyping error probability")
+            ("halfsib-phasing", bool_switch(&parameters.halfsibPhasing)->default_value(false), "")
+            ("hmm-phasing", bool_switch(&parameters.hmmPhasing)->default_value(false), "")
+            ("check-prephasing", bool_switch(&parameters.checkPrephasing)->default_value(false), "")
+            ("sex-chrom", bool_switch(&parameters.sexChrom)->default_value(false), "")
+            ("sex-map", bool_switch(&parameters.sexMap)->default_value(false), "")
+            ("columns", bool_switch(&parameters.columns)->default_value(false), "");
     // marker file required if genotype-file is not vcf
 
     // if(paramline=='yes' .and. phase_option==2)phase_option=3
@@ -448,9 +408,12 @@ int main (int argc, const char * argv[]) {
     cerr << "gerr " << parameters.gerr << endl;
     cerr << "templates " << parameters.nTemplates << endl;
 
-    //vector<PEDIGREE> orderedPedigree = read_and_sort_pedigree(parameters.pedFile.c_str());
-
-
+    cerr << "Reading pedigree" << endl;
+    std::map<int, PEDIGREE> pedMap = readPedMap(parameters.pedFile.c_str());
+    vector <PEDIGREE> orderedPedigree = sortPedigree(pedMap);
+    cerr << "orderedPedigree size = " << orderedPedigree.size() << endl;
+    cerr << "pedMap size = " << pedMap.size() << endl;
+    cerr << "pedMap[11] = " << pedMap[11].animal_key << " " << pedMap[11].sire_key << " " << pedMap[11].dam_key << endl;
 
 
 
@@ -504,8 +467,7 @@ int main (int argc, const char * argv[]) {
     std::ifstream infile(parameters.markerFile);
     string line;
     char isPar = 'A';
-    while (getline(infile, line))
-    {   
+    while (getline(infile, line)) {
         // if(autosome==1 .and. sexmap==0)read(50,*,iostat=io)k,markfile,position
         // if(autosome==0 .and. sexmap==0)read(50,*,iostat=io)k,markfile,position,ispar
         // if(autosome==1 .and. sexmap==1)read(50,*,iostat=io)k,markfile,position,position2
@@ -516,42 +478,40 @@ int main (int argc, const char * argv[]) {
         iss >> positionCM;
         markerInfo.posi1 = positionCM / 100;
 
-        if(parameters.sexMap) 
-        {
+        if (parameters.sexMap) {
             double positionSexMapCM;
             iss >> positionSexMapCM;
             markerInfo.posi2 = positionSexMapCM / 100;
-        }
-        else {
+        } else {
             markerInfo.posi2 = markerInfo.posi1;
         }
-        
-        if(parameters.sexChrom) {
+
+        if (parameters.sexChrom) {
             iss >> isPar;
             //if (!(iss >> a >> b)) { break; }
-        } 
+        }
 
-        if(isPar != 'X')
-        {   
+        if (isPar != 'X') {
             int markerCount = markerInfoVec.size() - 1;
-            parstart=min(parstart, markerCount);
-            parend=max(parend,  markerCount);
+            parstart = min(parstart, markerCount);
+            parend = max(parend, markerCount);
         }
         // if(autosome==1 .or. ispar .ne. 'X')then
-    //  parstart=min(parstart,num)
-    //  parend=max(parend,num)
-    // endif
-        if(markerInfoVec.size() > 1 ) {
-            if(markerInfo.posi1 < markerInfoVec.back().posi1 || markerInfo.posi2 < markerInfoVec.back().posi2)
-            {
+        //  parstart=min(parstart,num)
+        //  parend=max(parend,num)
+        // endif
+        if (markerInfoVec.size() > 1) {
+            if (markerInfo.posi1 < markerInfoVec.back().posi1 || markerInfo.posi2 < markerInfoVec.back().posi2) {
                 cerr << "Problem in the map file: marker positions are not consecutive !!!" << endl;
                 exit(1);
-            } else if(markerInfo.posi1 == markerInfoVec.back().posi1 || markerInfo.posi2 == markerInfoVec.back().posi2) {
-                cerr << "Warning: some markers with identical positions ::" << markerInfo.posi1 << " " << markerInfoVec.back().posi1;
+            } else if (markerInfo.posi1 == markerInfoVec.back().posi1 ||
+                       markerInfo.posi2 == markerInfoVec.back().posi2) {
+                cerr << "Warning: some markers with identical positions ::" << markerInfo.posi1 << " "
+                     << markerInfoVec.back().posi1;
                 exit(1);
             }
         }
-  
+
         markerInfoVec.push_back(markerInfo);
 
     }
@@ -607,13 +567,13 @@ int main (int argc, const char * argv[]) {
 // allocate(newid(0:maxid),oldid(0:maxid))
 // newid=0;oldid=0
 
-
-    vector<AnimalInfo> animalInfoVec = readGenotypes(parameters, markerInfoVec);
+    vector <AnimalInfo> animalInfoVec = readGenotypes(parameters, markerInfoVec, pedMap);
     cerr << "Animal count=" << animalInfoVec.size() << endl;
     cerr << "Animal gen1 size=" << animalInfoVec[0].gen1.size() << endl;
 
     phaseHomozygotes(animalInfoVec);
-    cerr << "animalInfoVec[1].hap => " << (int) animalInfoVec[1].hap1[2] << " " << (int) animalInfoVec[1].hap2[2] << endl;
+    cerr << "animalInfoVec[1].hap => " << (int) animalInfoVec[1].hap1[2] << " " << (int) animalInfoVec[1].hap2[2]
+         << endl;
     phaseMendelian(animalInfoVec);
 
 //  call halfsib_phasing
@@ -837,7 +797,7 @@ int main (int argc, const char * argv[]) {
 //   if(mere/=0)then
 //     dall1=typ(mere,2*k-1);dall2=typ(mere,2*k)
 //   endif  
-  
+
 //   if(sall1/=0 .and. dall1/=0)then
 
 //     if(sall1==sall2 .and. dall1==dall2)then     ! both parent homozygous
@@ -890,7 +850,7 @@ int main (int argc, const char * argv[]) {
 //     ! test identical genotype for both parents
 //    if(sall1==dall1 .and. sall2==dall2)cycle
 //    if(sall1==dall2 .and. sall2==dall1)cycle
-   
+
 //    if(all1==sall1 .and. all2==dall1)then
 //          hap(i,1,k)=all1;hap(i,2,k)=all2
 //          haplotyped(i)=.true.
@@ -944,7 +904,7 @@ int main (int argc, const char * argv[]) {
 //     ! test identical genotype for sire and progeny
 //    if(sall1==all1 .and. sall2==all2)cycle
 //    if(sall1==all2 .and. sall2==all1)cycle
-    
+
 //    if(all1==sall1)then
 //          hap(i,1,k)=all1;hap(i,2,k)=all2
 //          haplotyped(i)=.true.
@@ -983,7 +943,7 @@ int main (int argc, const char * argv[]) {
 //     ! test identical genotype for dam and progeny
 //    if(dall1==all1 .and. dall2==all2)cycle
 //    if(dall1==all2 .and. dall2==all1)cycle
-    
+
 //    if(all2==dall1)then
 //          hap(i,1,k)=all1;hap(i,2,k)=all2
 //          haplotyped(i)=.true.
@@ -1006,7 +966,7 @@ int main (int argc, const char * argv[]) {
 //   endif
 //  enddo
 // enddo
-   
+
 
 // end subroutine
 
@@ -1074,10 +1034,10 @@ int main (int argc, const char * argv[]) {
 //  if(sire(byparent(firsto,2))==oldparent)parsex=1
 //  if(dam(byparent(firsto,2))==oldparent)parsex=2
 
- 
+
 //  allocate(nrec(noffspring))
 //  nrec=0
- 
+
 //  if(noffspring<11)famsize=noffspring
 //  if(noffspring>10 .and. noffspring<21)famsize=11
 //  if(noffspring>20 .and. noffspring<51)famsize=12
@@ -1141,7 +1101,7 @@ int main (int argc, const char * argv[]) {
 //     if(hap2(offspring-firsto+1,k)==3)hap2(offspring-firsto+1,k)=0
 //    enddo
 //   enddo
- 
+
 //  phase1=0;phase2=0;mc1=0;phased=0;sextemplate=0
 
 //    call phase_byone(7)
@@ -1366,7 +1326,7 @@ int main (int argc, const char * argv[]) {
 //   !conv=1e-17
 
 //   if(conv<1e-16 .or. round==2000)exit
- 
+
 //  enddo ! new parameters
 //  if(parsex==1 .and. printout==2 .and. (noffspring>2 .or. prephased))then
 //   if(parstart < parend)totlik1=totlik1+lik
@@ -1499,7 +1459,7 @@ int main (int argc, const char * argv[]) {
 // ! induction: to get to i, two ways:
 // ! 1) transition + jump into cluster i
 // ! 2) no transition and in i at previous position
- 
+
 // do k=2,nmarq
 //  pjump=jump(k-1,ibd)
 //  do i=1,2
@@ -1548,7 +1508,7 @@ int main (int argc, const char * argv[]) {
 //  pjump=jump(k,ibd)
 //  do i=1,2
 //     prob_emission=emission(byparent(offspring,2),i,k+1,parsex)
- 
+
 //     beta(i,k)=beta(i,k)+pjump(0)*prob_emission*beta(i,k+1)
 //     beta(3-i,k)=beta(3-i,k)+pjump(1)*prob_emission*beta(i,k+1)
 //  enddo
@@ -1978,7 +1938,7 @@ int main (int argc, const char * argv[]) {
 //   emission=(1.d0-epsi)*bjk(marker,cluster1,2)+epsi*bjk(marker,cluster1,1)
 //  endif
 //  return
- 
+
 // end function
 
 // subroutine requiem(gender)
@@ -2049,7 +2009,7 @@ int main (int argc, const char * argv[]) {
 // postrec=recounts/ngam(gender)
 // enddo
 
- 
+
 // entropy=-entropy/log(2.d0)
 // do k=1,nmark
 //  if(npar(k)/=0.00)par_error(k)=par_error(k)/npar(k)
@@ -2108,7 +2068,7 @@ int main (int argc, const char * argv[]) {
 // ! rules 5 : phase all based on all markers - 0.99
 // ! rules 6 : phase all based on all markers - 0.99 (min-informative reduced)
 // ! rules 7 : rules 6 but markers must be "balanced"
-  
+
 //   distortion=0.00
 //   select case(rules)
 //     case(1)
@@ -2268,7 +2228,7 @@ int main (int argc, const char * argv[]) {
 //   endif
 
 // enddo ! marker
- 
+
 // end subroutine
 // subroutine printrec
 // implicit none

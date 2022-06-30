@@ -1,14 +1,16 @@
+#pragma once
 #include <map>
-#include <vector> 
+#include <vector>
+#include <iostream>
 using namespace std;
 
 struct PEDIGREE {
     int animal_key;
     int sire_key;
     int dam_key;
-    int animal_code;
-    int sire_code;
-    int dam_code;
+    // int animal_code;
+    // int sire_code;
+    // int dam_code;
     bool processed;
 };
 
@@ -28,16 +30,19 @@ void pedigreeTree(std::map<int, PEDIGREE> &pedMap, int indvID, vector<PEDIGREE> 
     pedigreeTree(pedMap, pedigree.sire_key, orderedPedigree);
     pedigreeTree(pedMap, pedigree.dam_key, orderedPedigree);
     
-    pedigree.animal_code = orderedPedigree.size() + 1;
-    pedigree.sire_code = pedMap[pedigree.sire_key].animal_code;
-    pedigree.dam_code = pedMap[pedigree.dam_key].animal_code;
+    // pedigree.animal_code = orderedPedigree.size() + 1;
+    // pedigree.sire_code = pedMap[pedigree.sire_key].animal_code;
+    // pedigree.dam_code = pedMap[pedigree.dam_key].animal_code;
     pedigree.processed = true;
     pedMap[indvID] = pedigree;
+    if (pedigree.animal_key == 11) {
+       cerr << "pedigreeTree::pedMap[11] = " << pedMap[11].animal_key << " " << pedMap[11].sire_key << " " << pedMap[11].dam_key << endl;
+    }
     orderedPedigree.push_back(pedigree);
     //printf("%d\t%d\t%d\n", pedigree.animal_key, pedigree.sire_key, pedigree.dam_key);
 }
 
-vector<PEDIGREE> read_and_sort_pedigree(const char *pedFileName)
+std::map<int, PEDIGREE> readPedMap(const char *pedFileName)
 {
     int     ak,sire_ak,dam_ak;
     FILE    *pedfile;
@@ -58,14 +63,21 @@ vector<PEDIGREE> read_and_sort_pedigree(const char *pedFileName)
         while (fgetc(pedfile)!='\n');
     }
     fclose(pedfile);
+    
+    return pedMap;
+}
 
+vector<PEDIGREE> sortPedigree(std::map<int, PEDIGREE> &pedMap)
+{
     vector<PEDIGREE> orderedPedigree;
     orderedPedigree.reserve(pedMap.size());
     fprintf(stderr,"Pedmap size = %ld\n", pedMap.size());
-    pedigreeTree(pedMap, 23934418, orderedPedigree);
+    
+    //pedigreeTree(pedMap, 23934418, orderedPedigree);
 
     for ( const auto &myPair : pedMap ) {
         pedigreeTree(pedMap, myPair.first, orderedPedigree);
     }
+    cerr << "pedMap[11] = " << pedMap[11].animal_key << " " << pedMap[11].sire_key << " " << pedMap[11].dam_key << endl;
     return orderedPedigree;
 }
