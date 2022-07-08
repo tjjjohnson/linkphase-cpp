@@ -1,0 +1,12 @@
+old_lic/
+lic/
+.vscode/
+tdm_pedigree_src/
+check/
+test/
+bin/
+
+
+# Added by cargo
+
+/target
