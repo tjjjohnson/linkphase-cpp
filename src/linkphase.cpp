@@ -10,6 +10,7 @@
 #include <algorithm>
 #include "pedigree.cpp"
 #include "AnimalInfo.cpp"
+#include "HalfsibPhaser.cpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/program_options.hpp>
 //namespace po = boost::program_options;
@@ -32,26 +33,6 @@ struct MarkerInfo {
     int numrecs[2];
 
 
-};
-
-
-struct MarkerInfoHalfSibPhasing {
-    // allocate(phase1(nmarq),phase2(nmarq),info_marker(nmarq,3),par_error(nmarq),entropy(nmarq),nentropy(nmarq))
-    // allocate(phased(nmarq),npar(nmarq),noff(nmarq),off_error(nmarq),tophase(nmarq))
-    // allocate(emap(nmarq,2),probrecs(nmarq,2),numrecs(nmarq,2))
-    bool phased;
-    int phase1;
-    int phase2;
-    int info_marker[3];
-    int tophase;
-    double par_error;
-    double npar;
-    double noff;
-    double off_error;
-    double entropy;
-    double nentropy;
-
-    //#allocate (emap(nmarq, 2), probrecs(nmarq, 2), numrecs(nmarq, 2))
 };
 
 
@@ -141,23 +122,7 @@ void writeDataFiles(int reading, vector <AnimalInfo> &animalInfoVec, int nMarker
     phasesFile.close();
 }
 
-struct Parameters {
-    string pedFile;
-    string genotypeFile;
-    string markerFile;
-    bool halfsibPhasing; // if(paramline=='yes')phase_option=2
-    bool hmmPhasing;
-    bool checkPrephasing; //if(paramline=='yes') map_option=1
-    // if(paramline=='yes' .and. phase_option==2)phase_option=3
-    // if(paramline=='yes' .and. phase_option==1)stop 'Error in parameter file, HMM_PHASING must be preceded by HALFSIB_PHASING'
-    bool sexChrom; //autosome=0
-    bool sexMap;
-    bool columns;
-    int nTemplates;
-    int nIterations;
-    double gerr;
 
-};
 
 void phaseHomozygotes(vector <AnimalInfo> &animalInfoVec) {
     //for(int animalIndex=0; animalIndex < animalInfoVec.size(); animalIndex++) {
@@ -197,6 +162,10 @@ void phaseMendelian(vector <AnimalInfo> &animalInfoVec) {
     }
 }
 
+void identifyMarkersToPhase(AnimalInfo &parent) {
+
+}
+
 void phaseHalfSibs(Parameters parameters, vector <AnimalInfo> &animalInfoVec) {
     if(parameters.hmmPhasing) {
         ofstream genotypingErrorsFile("genotyping_errors.txt");
@@ -224,44 +193,10 @@ void phaseHalfSibs(Parameters parameters, vector <AnimalInfo> &animalInfoVec) {
     for(int mapIter=1; mapIter<=parameters.nIterations; mapIter++) {
         for (auto iter = animalInfoVec.begin(); iter != animalInfoVec.end(); ++iter) {
             AnimalInfo *animalInfo = &(*iter);
+
+            HalfsibPhaser halfsibPhaser(parameters, animalInfo);
+            halfsibPhaser.run();
             //cerr << "here";
-            if(animalInfo->offspring.size() > 0) {
-                //allocate nrec(noffspring)
-                //nrec = 0
-                //animalInfo.se
-                //allocate(hap2(noffspring, nmarq)
-                vector<int> offSpringHaplotypes;
-                // listtophase
-                //
-                //if(parameters.hmmPhasing) and prephased and map_option==1 and mapiterm==1) call phase_hmm(1, gerr,0)
-
-                // get offspring haplotypes
-                //cerr << animalInfo->id << " has " << animalInfo->offspring.size() << " offspring" << endl;
-
-
-                if(parameters.halfsibPhasing && (animalInfo->offspring.size() > 2 || animalInfo->prePhased())) {
-                    // initialize hmm with homozygous markers and offspring
-                    int nTested = 0;
-                    for(int offspring=0; offspring < animalInfo->offspring.size(); offspring++) {
-                        AnimalInfo *offspringInfo = animalInfo->offspring[offspring];
-                        if(offspring > parameters.nTemplates - 1)
-                            break;
-                        for(int markerIndex=0; markerIndex < animalInfo->gen1.size(); markerIndex++) {
-                            if(offspringInfo->prephaseInfo[markerIndex] == Prephase::none
-                            || offspringInfo->prephaseInfo[markerIndex] > Prephase::both_informative)
-                                continue; //use only mendelian marker
-                            if(animalInfo->sex==Sex::male && animalInfo->prephaseInfo[markerIndex] == Prephase::sire_hom)
-                                continue;
-                            if(animalInfo->sex==Sex::female && animalInfo->prephaseInfo[markerIndex] == Prephase::dam_hom)
-                                continue;
-
-                        }
-
-                        //cerr << "offspring hap = " << animalInfo->offspring[offspring]->hap[animalInfo->sex][5] << endl;
-                        //offSpringHaplotypes.push_back()
-                    }
-                }
-            }
         }
     }
 
